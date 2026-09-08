@@ -136,14 +136,17 @@
         }
 
         /* ===== MUSIC CAROUSEL ===== */
+        :root { --album-size: 160px; --album-gap: 10px; }
+
         .carousel-container {
             position: relative;
-            padding: 0 50px;
+            padding: 0 52px;
         }
 
         .carousel-viewport {
             overflow: hidden;
             padding: 20px 0;
+            touch-action: pan-y;
         }
 
         .carousel-track {
@@ -154,22 +157,26 @@
         }
 
         .carousel-item {
-            flex: 0 0 180px;
-            margin: 0 14px;
+            flex: 0 0 var(--album-size);
+            margin: 0 var(--album-gap);
             transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            opacity: 0.35;
-            transform: scale(0.78);
+            opacity: 0.18;
+            transform: scale(0.5);
             cursor: pointer;
         }
 
+        /* distance-based tiers: you can now see 2 albums away */
+        .carousel-item.distant { opacity: 0.35; transform: scale(0.62); }
+        .carousel-item.far { opacity: 0.6; transform: scale(0.8); }
+        .carousel-item.near { opacity: 0.85; transform: scale(0.94); }
         .carousel-item.active {
             opacity: 1;
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
 
         .carousel-item img {
-            width: 180px;
-            height: 180px;
+            width: var(--album-size);
+            height: var(--album-size);
             object-fit: cover;
             border-radius: 14px;
             border: 3px solid #000;
@@ -181,25 +188,29 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
             border: 3px solid #000;
             background: #FDFBF7;
-            font-size: 20px;
-            font-weight: bold;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            line-height: 1;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 20;
             transition: all 0.2s;
-            box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+            box-shadow: 3px 3px 0px 0px rgba(0,0,0,1);
+            touch-action: manipulation;
+            padding: 0;
         }
 
         .carousel-btn:hover {
             background: #FFD166;
-            transform: translateY(-50%) scale(1.1);
+            transform: translateY(-50%) translate(-2px, -2px);
+            box-shadow: 5px 5px 0px 0px rgba(0,0,0,1);
         }
 
         .carousel-btn:active {
@@ -207,8 +218,39 @@
             box-shadow: none;
         }
 
-        .carousel-btn.left { left: 5px; }
-        .carousel-btn.right { right: 5px; }
+        .carousel-btn.left { left: 0; }
+        .carousel-btn.right { right: 0; }
+
+        /* Mobile: bubbles hug their content instead of forcing tall squares */
+        @media (max-width: 640px) {
+            .game-bubble {
+                aspect-ratio: auto;
+                justify-content: flex-start;
+                padding: 16px 18px;
+            }
+            .bubble-desc {
+                flex-grow: 0;
+                align-items: flex-start;
+                text-align: left;
+                justify-content: flex-start;
+                margin-top: 2px;
+            }
+            .bubble-button {
+                margin-top: 14px;
+                align-self: center;
+            }
+        }
+
+        /* Mobile: smaller albums so neighbors still peek through, tighter arrow rails */
+        @media (max-width: 640px) {
+            :root { --album-size: 116px; --album-gap: 8px; }
+            .carousel-container { padding: 0 44px; }
+            .carousel-btn { width: 34px; height: 38px; font-size: 10px; border-width: 2px; box-shadow: 2px 2px 0px 0px rgba(0,0,0,1); }
+            .carousel-viewport { padding: 14px 0; }
+            .album-name { font-size: 14px; }
+            .album-desc { font-size: 12px; }
+            .section-divider { margin: 24px 0 18px; gap: 10px; }
+        }
 
         .album-info {
             text-align: center;
@@ -275,7 +317,7 @@
     <header class="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-6">
         <img src="logo.png"
              alt="CrosMakesGames Logo"
-             class="w-48 h-30 sm:w-28 sm:h-28 md:w-62 md:h-32 object-contain pixelated-img float-anim flex-shrink-0"
+             class="w-36 sm:w-28 md:w-40 object-contain pixelated-img float-anim flex-shrink-0"
              onerror="this.src='https://via.placeholder.com/128/ffffff/000000?text=LOGO'">
         <div class="flex-1 flex flex-col justify-center gap-4 pt-2">
             <div>
@@ -336,10 +378,12 @@
         <span class="line"></span>
     </div>
 
-    <div class="max-w-3xl mx-auto mb-8">
+    <div class="max-w-5xl mx-auto mb-8">
         <!-- Carousel -->
         <div class="carousel-container">
-            <div class="carousel-viewport">
+            <button class="carousel-btn left" id="carousel-prev" aria-label="Previous album">&#9668;</button>
+            <button class="carousel-btn right" id="carousel-next" aria-label="Next album">&#9658;</button>
+            <div class="carousel-viewport" id="carousel-viewport">
                 <div class="carousel-track" id="carousel-track">
                     <!-- Album placeholders — replace src, name, and description with your own -->
                 </div>
@@ -386,13 +430,6 @@ const projects = [
         link: "https://horionparty.crosmakesgames.com/",
         button: "Play",
         color: "#FF6B6B"
-    },
-    {
-        title: "Horion Fetch Engine",
-        description: "Uses Horion's fetch system to fetch CORS compliant or iframe sites in about:blank wrappers. Mainly a dev tool for Horion development.",
-        link: "https://hfe.crosmakesgames.com/",
-        button: "Use",
-        color: "#90D5FF"
     },
     {
         title: "crosmakesgames.com",
@@ -484,72 +521,129 @@ const albums = [
 ];
 
 // ===== RENDER CAROUSEL =====
+// The album list is triplicated so the active album always has 2 real
+// neighbors on BOTH sides — wrapping around is seamless.
 const track = document.getElementById('carousel-track');
+const viewportEl = document.getElementById('carousel-viewport');
+const COPIES = 3;
+const L = albums.length;
 
-albums.forEach((a, i) => {
-    const item = document.createElement('div');
-    item.className = 'carousel-item';
-    item.dataset.index = i;
-    item.innerHTML = `<img src="${a.img}" alt="${a.name}">`;
-    item.addEventListener('click', () => goToAlbum(i));
-    track.appendChild(item);
-});
+for (let c = 0; c < COPIES; c++) {
+    albums.forEach((a, i) => {
+        const item = document.createElement('div');
+        item.className = 'carousel-item';
+        item.dataset.album = i;
+        item.innerHTML = `<img src="${a.img}" alt="${a.name}" loading="lazy">`;
+        item.addEventListener('click', () => goToAlbum(i));
+        track.appendChild(item);
+    });
+}
 
-const items = track.children;
-let carouselIndex = 0;
+const items = Array.from(track.children);
+let pos = L;            // current position within the triplicated track
+let carouselIndex = 0;  // active album index (0..L-1)
 
 function updateActiveAlbumInfo() {
     document.getElementById('active-album-name').textContent = albums[carouselIndex].name;
     document.getElementById('active-album-desc').textContent = albums[carouselIndex].description;
 }
 
-function centerCarousel() {
-    const containerWidth = track.parentElement.offsetWidth;
-    const itemWidth = 180 + 28; // width + margins (14px each side)
-    const activeItem = items[carouselIndex];
+function getItemPitch() {
+    const el = items[0];
+    const style = getComputedStyle(el);
+    return el.offsetWidth + parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+}
 
-    // Remove active class from all, add to current
-    Array.from(items).forEach(el => el.classList.remove('active'));
-    activeItem.classList.add('active');
+function ringDistance(a, b, total) {
+    const d = Math.abs(a - b);
+    return Math.min(d, total - d);
+}
 
-    const offset = containerWidth / 2 - (carouselIndex * itemWidth + itemWidth / 2);
+function applyCarouselState(animate = true) {
+    const containerWidth = viewportEl.offsetWidth;
+    const pitch = getItemPitch();
+    carouselIndex = ((pos % L) + L) % L;
+
+    // Tier albums by distance: active in the middle, near/far/distant fading out
+    items.forEach((el, k) => {
+        const d = ringDistance(k % L, carouselIndex, L);
+        el.classList.remove('active', 'near', 'far', 'distant');
+        el.classList.add(d === 0 ? 'active' : d === 1 ? 'near' : d === 2 ? 'far' : 'distant');
+    });
+
+    if (!animate) track.style.transition = 'none';
+    const offset = containerWidth / 2 - (pos * pitch + pitch / 2);
     track.style.transform = `translateX(${offset}px)`;
+    if (!animate) {
+        track.offsetHeight; // force reflow so the re-anchor isn't animated
+        track.style.transition = '';
+    }
 
     updateActiveAlbumInfo();
 }
 
-let userInteracted = false;
-let autoScrollTimer = null;
-
-function startAutoScroll() {
-    if (autoScrollTimer) clearInterval(autoScrollTimer);
-    autoScrollTimer = setInterval(() => {
-        if (!userInteracted) scrollCarousel(1);
-    }, 5000);
+// Keep `pos` inside the middle copy of the track. The seam is invisible —
+// same album, same pixels, just a silent re-anchor after the slide.
+function normalizePos() {
+    if (pos >= 2 * L) { pos -= L; return true; }
+    if (pos < L) { pos += L; return true; }
+    return false;
 }
 
-function userScroll(dir) {
-    userInteracted = true;
-    scrollCarousel(dir);
+function scrollCarousel(dir) {
+    pos += dir;
+    applyCarouselState();
+    setTimeout(() => {
+        if (normalizePos()) applyCarouselState(false);
+    }, 560);
 }
 
 function goToAlbum(i) {
-    userInteracted = true;
-    carouselIndex = i;
-    centerCarousel();
+    let delta = ((i - carouselIndex) % L + L) % L;
+    if (delta > L / 2) delta -= L;
+    pos += delta;
+    applyCarouselState();
+    setTimeout(() => {
+        if (normalizePos()) applyCarouselState(false);
+    }, 560);
 }
 
-// Stop auto-scroll on any manual interaction with the carousel
-document.querySelector('.carousel-container').addEventListener('click', () => {
-    userInteracted = true;
+function userScroll(dir) {
+    scrollCarousel(dir);
+}
+
+// Arrow buttons
+document.getElementById('carousel-prev').addEventListener('click', (e) => {
+    e.stopPropagation();
+    userScroll(-1);
 });
+document.getElementById('carousel-next').addEventListener('click', (e) => {
+    e.stopPropagation();
+    userScroll(1);
+});
+
+// Touch swipe
+let touchStartX = null;
+let touchStartY = null;
+viewportEl.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+}, { passive: true });
+viewportEl.addEventListener('touchend', (e) => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+        scrollCarousel(dx < 0 ? 1 : -1);
+    }
+    touchStartX = null;
+}, { passive: true });
 
 // Initial center + on resize
 window.addEventListener('load', () => {
-    centerCarousel();
-    startAutoScroll();
+    applyCarouselState(false);
 });
-window.addEventListener('resize', centerCarousel);
+window.addEventListener('resize', () => applyCarouselState(false));
 </script>
 
 </body>

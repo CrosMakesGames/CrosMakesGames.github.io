@@ -449,7 +449,6 @@
 </div>
 
 <script>
-// ===== GAMES DATA =====
 const projects = [
     {
         title: "Veridium",
@@ -460,6 +459,14 @@ const projects = [
         color: "#9e4aed"
     },
     {
+        title: "Vidium",
+        description: "A streaming API + player I built for Verdium and any custom instances.",
+        link: "https://vidium.crosmakesgames.com/",
+        source: "https://github.com/crosmakesgames/vidium",
+        button: "Visit",
+        color: "#53138f"
+    },
+    {
         title: "crosmakesgames.com",
         description: "The site you're on right now!",
         link: "https://crosmakesgames.com/",
@@ -468,7 +475,7 @@ const projects = [
         color: "#FF5C5C"
     },
 ];
-// ===== RENDER SQUARE BUBBLES =====
+
 const bubbleContainer = document.getElementById('bubbles-container');
 
 projects.forEach((p) => {
@@ -490,7 +497,6 @@ projects.forEach((p) => {
     bubbleContainer.appendChild(card);
 });
 
-// ===== LINKS =====
 const links = [
     { label: "CMG Launcher Setup", url: "https://bit.ly/crosmakesgames" },
     { label: "GitHub", url: "https://github.com/crosmakesgames" },
@@ -508,7 +514,6 @@ links.forEach(l => {
     linksList.appendChild(a);
 });
 
-// ===== ARCHIVED PROJECTS =====
 const archived = [
     {
         title: "The CMG Archive",
@@ -554,7 +559,6 @@ archived.forEach((p) => {
     archiveContainer.appendChild(card);
 });
 
-// ===== ALBUMS DATA (edit these with your own albums) =====
 const albums = [
     { name: "Blonde - Frank Ocean", img: "https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526", description: "Blonde is Frank Ocean's avant-garde R&B and pop masterpiece. Production quality and a tracklist beaten by none." },
     { name: "IGOR - Tyler, The Creator", img: "https://i.scdn.co/image/ab67616d00001e0230a635de2bb0caa4e26f6abb", description: "IGOR is my favorite Tyler, The Creator album. It just doesn't have a miss across the whole album." },
@@ -564,9 +568,6 @@ const albums = [
     { name: "Currents - Tame Impala", img: "https://upload.wikimedia.org/wikipedia/en/9/9b/Tame_Impala_-_Currents.png?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=original", description: "A great psychedelic-rock album with some of Tame Impala's best songs in my opinion." }
 ];
 
-// ===== RENDER CAROUSEL =====
-// The album list is triplicated so the active album always has 2 real
-// neighbors on BOTH sides — wrapping around is seamless.
 const track = document.getElementById('carousel-track');
 const viewportEl = document.getElementById('carousel-viewport');
 const COPIES = 3;
